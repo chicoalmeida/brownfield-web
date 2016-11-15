@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,6 +36,15 @@ public class BrownFieldController {
         model.addAttribute("uidata", uiData);
         return "search";
     }
+
+    @RequestMapping(value="/search", method=RequestMethod.POST)
+    public String greetingSubmit(@ModelAttribute UIData uiData, Model model) {
+        Flight[] flights = searchClient.postForObject("http://search-apigateway/api/search/get", uiData.getSearchQuery(), Flight[].class);
+        uiData.setFlights(Arrays.asList(flights));
+        model.addAttribute("uidata", uiData);
+        return "result";
+    }
+
 
     @RequestMapping(value = "/book/{flightNumber}/{origin}/{destination}/{flightDate}/{fare}", method = RequestMethod.GET)
     public String bookQuery(@PathVariable String flightNumber,
